@@ -32,7 +32,7 @@ do
         echo "$nombres"
     ;;
     Apellido_paterno)
-        echo "--Apellido materno--"
+        echo "--Apellido paterno--"
         echo "$apellidoPaterno"
     ;;
     Apellido_materno)
