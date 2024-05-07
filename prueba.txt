@@ -1,3 +1,3 @@
-Luis Ángel_Gutiérrez_Juárez_1702282A_FIE_Computación_17GUJL2A
-Alexa Valentina_Vargas_Lara_1802282B_FIE_Eléctrica_18VALA2B
-Samuel_Martinéz_Pérez_2405051B_FIE_Computación_24MAPS1B
+Luis Angel,Gutierrez,Juarez,1702282A,GUJL021104
+Alexa Valentina,Vargas,Lara,1802282B,VALA021103
+Samuel,Martinez,Perez,2405051B,MAPS021102

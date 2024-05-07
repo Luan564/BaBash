@@ -2,44 +2,82 @@
 
 
 <<Awk
-awk -F "_" '{ gsub("á","a",$0) ; gsub("é","e",$0) ; gsub("í","i",$0) ; gsub("ó","o",$0) ; gsub("ú","u",$0) ;            gsub("ñ","n",$0) ; gsub("Ñ","N",$0) ; gsub("Á","A",$0) ; gsub("É","E",$0) ; gsub("Í","I",$0) ; gsub("Ó","O",$0) ;       gsub("Ú","U",$0) ; print $0  }' prueba.txt
+awk -F "," '{ gsub("á","a",$0) ; gsub("é","e",$0) ; gsub("í","i",$0) ; gsub("ó","o",$0) ; gsub("ú","u",$0) ;            gsub("ñ","n",$0) ; gsub("Ñ","N",$0) ; gsub("Á","A",$0) ; gsub("É","E",$0) ; gsub("Í","I",$0) ; gsub("Ó","O",$0) ;       gsub("Ú","U",$0) ; print $0  }' prueba.txt
 Awk
 
 sed -i "s/á/a/g; s/é/e/g; s/í/i/g; s/ó/o/g; s/ú/u/g; s/ñ/n/g; s/Á/A/g; s/É/E/g; s/Í/I/g; s/Ó/O/g; s/Ú/U/g; s/Ñ/N/g" "prueba.txt"
 
+#Verificar si existen los grupos "Alumnos" y "Profesores" si no ps crear
+
+for grupo in "Alumnos" "Profesores"; do
+    #Verificar si el grupo ya existe
+    if grep -q "^$grupo:" /etc/group; then
+        echo "El grupo $grupo ya existe."
+    else
+        #Crear el grupo si no existe
+        sudo groupadd "$grupo"
+        echo "El grupo $grupo ha sido creado."
+    fi
+done
+
+#Agregar usuarios del doc.txt
+
+#sudo useradd -g developers new_user 
+
+matriculas=$(awk -F "," '{ print $4  }' prueba.txt)
+
+for alumno in $matriculas; do
+    # Verificar si el alumno ya está en el sistema
+    if id "$alumno" &>/dev/null; then
+        echo "El alumno $alumno ya existe."
+    else
+        # Crear el alumno si no existe
+        sudo useradd -m "$alumno"
+        echo "El alumno $alumno ha sido creado."
+    fi
+
+    # Verificar si el alumno ya está en el grupo
+    if getent group "Alumnos" | grep -q "\b$alumno\b"; then
+        echo "El alumno $alumno ya está en el grupo Alumnos."
+    else
+        # Agregar el alumno al grupo si no está presente
+        sudo usermod -aG "Alumnos" "$alumno"
+        echo "El alumno $alumno ha sido agregado al grupo Alumnos."
+    fi
+done
 
 
-# nombres=$(awk -F "_" '{ print $1  }' prueba.txt)
-
-# apellidoPaterno=$(awk -F "_" '{ print $2  }' prueba.txt)
-
-# apellidoMaterno=$(awk -F "_" '{ print $3  }' prueba.txt)
-
-# matricula=$(awk -F "_" '{ print $4  }' prueba.txt)
-
-# facultad=$(awk -F "_" '{ print $5  }' prueba.txt)
-
-# carrera=$(awk -F "_" '{ print $6  }' prueba.txt)
-
-# claves=$(awk -F "_" '{ print $7 }' prueba.txt)
 
 
-select var in Nuevo_Usuario Elminar_Usuario Apellido_materno Matricula Facultad Carrera salir
+# nombres=$(awk -F "," '{ print $1  }' prueba.txt)
+
+# apellidoPaterno=$(awk -F "," '{ print $2  }' prueba.txt)
+
+# apellidoMaterno=$(awk -F "," '{ print $3  }' prueba.txt)
+
+# facultad=$(awk -F "," '{ print $5  }' prueba.txt)
+
+# carrera=$(awk -F "," '{ print $6  }' prueba.txt)
+
+# claves=$(awk -F "," '{ print $7 }' prueba.txt)
+
+
+select var in Nuevo_Usuario Elminar_Usuario Apellido_materno Matricula Facultad Autodestruccion salir
 do
     case $var in 
     Nuevo_Usuario)
         #Datos del Usuario
         echo -n "Nombre(s): "
-        read name
-        echo -n $name"_" >> prueba.txt
+        read temp
+        echo -n $temp"," >> prueba.txt
 
         echo -n "Apellido Paterno: "
-        read LstName
-        echo -n $LstName"_" >> prueba.txt
+        read temp
+        echo -n $temp"," >> prueba.txt
 
         echo -n "Apellido Materno: "
-        read MlstName
-        echo -n $MlstName"_" >> prueba.txt
+        read temp
+        echo -n $temp"," >> prueba.txt
         
         #Generacion de Matricula
         linesTxt=$(wc -l < "prueba.txt")
@@ -49,7 +87,7 @@ do
         temp=`date "+%y%m%d"`$numero$letra
 
         #Comprobar que no existe la Matricula
-        matriculas=$(awk -F "_" '{ print $4  }' prueba.txt)
+        matriculas=$(awk -F "," '{ print $4  }' prueba.txt)
         for var in $matriculas
         do
             if [ $temp == $var ];
@@ -61,43 +99,27 @@ do
             fi
         done
         temp=`date "+%y%m%d"`$numero$letra
-        echo -n $temp"_" >> prueba.txt
+        echo -n $temp"," >> prueba.txt
 
-        #Datos Escolares
-        echo -n "Facultad: "
-        read temp
-        echo -n $temp"_" >> prueba.txt
-
-        echo -n "Carrera: "
-        read temp
-        echo -n $temp"_" >> prueba.txt
-
-        #Generar contraseña
+        #Contraseña
         sed -i "s/á/a/g; s/é/e/g; s/í/i/g; s/ó/o/g; s/ú/u/g; s/ñ/n/g; s/Á/A/g; s/É/E/g; s/Í/I/g; s/Ó/O/g; s/Ú/U/g; s/Ñ/N/g" "prueba.txt"
-
-        con=`date "+%y"`
-        tra=$(echo "$LstName" | cut -c1-2)
-        tra=$(echo "$tra" | tr '[:lower:]' '[:upper:]')
-        se=$(echo "$MlstName" | cut -c1)
-        se=$(echo "$se" | tr '[:lower:]' '[:upper:]')
-        ni=$(echo "$name" | cut -c1)                    #cut sirve para obtener "x" letras de una cadena
-        ni=$(echo "$ni" | tr '[:lower:]' '[:upper:]')   #Convertir minusculas a Mayusculas
-        a=$numero$letra
-
-        contrasenia=$con$tra$se$ni$a
-        echo $contrasenia >> prueba.txt
+        echo -n "CURP: "
+        read temp
+        temp=$(echo "$temp" | tr '[:lower:]' '[:upper:]')
+        echo $temp >> prueba.txt
 
     ;;
 
     Elminar_Usuario)
-        echo -n "Ingrese la Matricula del Usuario a Eliminar: "
+        echo -n "Ingrese la Matricula del Alumno a Eliminar: "
         read temp
-        matriculas=$(awk -F "_" '{ print $4 }' prueba.txt)
+        matriculas=$(awk -F "," '{ print $4 }' prueba.txt)
         i=1
         for var in $matriculas
         do
             if [ $temp == $var ];
                 then
+                    
                     sed -i "${i}d" "prueba.txt"
                     break
             else
@@ -115,7 +137,27 @@ do
     Facultad)
 
     ;;
-    Carrera)
+    Autodestruccion)
+    #Eliminar usuarios previamente creados
+    for alumno in $matriculas; do
+        if id "$alumno" &>/dev/null; then
+            sudo userdel -r "$alumno"
+            echo "El alumno $alumno ha sido eliminado."
+        fi
+    done
+
+    #Eliminar Grupos xd
+    for grupo in "Alumnos" "Profesores"; do
+        #Verificar si el grupo existe
+        if grep -q "^$grupo:" /etc/group; then
+            #Eliminar el grupo si existe
+            sudo groupdel "$grupo"
+            echo "El grupo $grupo ha sido eliminado."
+        else
+            echo "El grupo $grupo no existe."
+        fi
+    done
+
 
     ;;
     salir)
