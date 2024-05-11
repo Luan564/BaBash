@@ -28,6 +28,7 @@ matriculas=$(awk -F "," '{ print $4  }' prueba.txt)
 
 for alumno in $matriculas; do
     # Verificar si el alumno ya está en el sistema
+    #El &>/dev/null es para que la salida sea mas "limpia" de no utilizarlo  
     if id "$alumno" &>/dev/null; then
         echo "El alumno $alumno ya existe."
     else
@@ -98,8 +99,8 @@ do
                     break
             fi
         done
-        temp=`date "+%y%m%d"`$numero$letra
-        echo -n $temp"," >> prueba.txt
+        matricula=`date "+%y%m%d"`$numero$letra
+        echo -n $matricula"," >> prueba.txt
 
         #Contraseña
         sed -i "s/á/a/g; s/é/e/g; s/í/i/g; s/ó/o/g; s/ú/u/g; s/ñ/n/g; s/Á/A/g; s/É/E/g; s/Í/I/g; s/Ó/O/g; s/Ú/U/g; s/Ñ/N/g" "prueba.txt"
@@ -108,6 +109,9 @@ do
         temp=$(echo "$temp" | tr '[:lower:]' '[:upper:]')
         echo $temp >> prueba.txt
 
+        sudo useradd -m "$matricula"
+        sudo usermod -aG "Alumnos" "$matricula"
+        echo "El alumno $matricula ha sido creado y agregado al grupo Alumnos."
     ;;
 
     Elminar_Usuario)
@@ -119,8 +123,9 @@ do
         do
             if [ $temp == $var ];
                 then
-                    
                     sed -i "${i}d" "prueba.txt"
+                    sudo userdel -r "$temp"
+                    echo "El alumno $temp ha sido Eliminado con exito."
                     break
             else
                 i=$(($i+1))
@@ -167,3 +172,10 @@ do
 done
 
 
+
+
+
+
+# getent group Profesores
+# getent group Alumnos
+# cat /etc/group
