@@ -9,7 +9,7 @@ else
     echo "El grupo alumnos ha sido creado."
 fi
 
-select var in Nuevo_Usuario Eliminar_Usuario Editar salir
+select var in Nuevo_Usuario Eliminar_Usuario Editar Buscar salir
 do
     case $var in 
     Nuevo_Usuario)
@@ -59,6 +59,7 @@ do
         echo "$matricula:$temp" | sudo chpasswd
         sudo chfn -f "$nombre" $matricula
         sudo usermod -aG "alumnos" "$matricula"
+        sudo chgrp alumnos /home/alumnos/"$matricula"
         echo "El alumno $matricula ha sido creado y agregado al grupo Alumnos."
     ;;
 
@@ -97,7 +98,7 @@ do
                     echo -n "Ingrese la Nueva contraseña: "
                     read contrasenia
                     echo "$temp:$contrasenia" | sudo chpasswd
-                    echo "El alumno $temp" se modifico de forma correcta.
+                    echo "La contraseña del alumno $temp" se modifico de forma correcta.
                 else
                     echo "El alumno $temp" NO existe.
                 fi
@@ -105,6 +106,11 @@ do
             ;;
             esac
         done
+    ;;
+    Buscar)
+    echo -n "Ingresa la matricula del Alumno: "
+    read temp
+    finger $temp
     ;;
     salir)
         break

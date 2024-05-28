@@ -1,3 +1,3 @@
-Luis Angel,Gutierrez,Juarez,1702282A,GUJL021104
+Luis Ángel,Gutiérrez,Juárez,1702282A,GUJL021104
 Alexa Valentina,Vargas,Lara,1802282B,VALA021103
-Samuel,Martinez,Villa,2405051B,MAVS021102
+Samuel,Martínez,Villa,2405051B,MAVS021102

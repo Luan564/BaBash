@@ -27,7 +27,7 @@ for alumno in $matriculas; do
         echo "El alumno $alumno ya existe."
     else
         # Crear el alumno si no existe
-        sudo useradd -m -d /home/alumnos/"$alumno" "$alumno"
+        sudo useradd -md /home/alumnos/"$alumno" "$alumno"
         echo "$alumno:$contrasenia" | sudo chpasswd
         echo "El alumno $alumno ha sido creado."
         sudo chfn -f "$nombre" $alumno
@@ -38,7 +38,8 @@ for alumno in $matriculas; do
         echo "El alumno $alumno ya está en el grupo Alumnos."
     else
         # Agregar el alumno al grupo si no está presente
-        sudo usermod -aG "alumnos" "$alumno"
+        sudo usermod -aG alumnos "$alumno"
+        sudo chgrp alumnos /home/alumnos/"$alumno"
         echo "El alumno $alumno ha sido agregado al grupo Alumnos."
     fi
 done
