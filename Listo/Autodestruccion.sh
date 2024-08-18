@@ -28,3 +28,6 @@ for grupo in "alumnos" "profesores"; do
         echo "El grupo $grupo no existe."
     fi
 done
+
+sudo rm -r /home/alumnos
+sudo rm -r /home/profesores
